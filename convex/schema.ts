@@ -1,7 +1,25 @@
 import { defineSchema, defineTable } from 'convex/server'
 import { type Infer, v } from 'convex/values'
 
+// TODO: will player_id be static for each devices? we can manually set username in the database.
 const schema = defineSchema({
+  lobbies: defineTable({
+    id: v.string(),
+    player_count: v.number(),
+    max_players: v.number(),
+  }).index('id', ['id']),
+
+  histories: defineTable({
+    id: v.string(),
+    lobby_id: v.string(),
+    player_id: v.string(),
+    // 'join' or 'leave'
+    action_type: v.string(),
+  })
+    .index('id', ['id'])
+    .index('lobby', ['lobby_id'])
+    .index('player', ['player_id']),
+
   boards: defineTable({
     id: v.string(),
     name: v.string(),
@@ -34,6 +52,8 @@ export default schema
 const board = schema.tables.boards.validator
 const column = schema.tables.columns.validator
 const item = schema.tables.items.validator
+const lobby = schema.tables.lobbies.validator
+const history = schema.tables.histories.validator
 
 export const updateBoardSchema = v.object({
   id: board.fields.id,
@@ -59,6 +79,20 @@ export const deleteColumnSchema = v.object({
   id: column.fields.id,
 })
 
+export const newLobbySchema = v.object(lobby.fields)
+export const updateLobbySchema = v.object({
+  id: lobby.fields.id,
+  player_count: lobby.fields.player_count,
+  max_players: lobby.fields.max_players,
+})
+export const deleteLobbySchema = v.object({
+  id: column.fields.id,
+})
+
+export const newHistorySchema = v.object(history.fields)
+
 export type Board = Infer<typeof board>
 export type Column = Infer<typeof column>
 export type Item = Infer<typeof item>
+export type Lobby = Infer<typeof lobby>
+
