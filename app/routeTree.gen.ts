@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as HistoriesIndexImport } from './routes/histories.index'
 import { Route as BoardsBoardIdImport } from './routes/boards.$boardId'
 
 // Create/Update Routes
@@ -19,6 +20,12 @@ import { Route as BoardsBoardIdImport } from './routes/boards.$boardId'
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const HistoriesIndexRoute = HistoriesIndexImport.update({
+  id: '/histories/',
+  path: '/histories/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -46,6 +53,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BoardsBoardIdImport
       parentRoute: typeof rootRoute
     }
+    '/histories/': {
+      id: '/histories/'
+      path: '/histories'
+      fullPath: '/histories'
+      preLoaderRoute: typeof HistoriesIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -54,36 +68,41 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/boards/$boardId': typeof BoardsBoardIdRoute
+  '/histories': typeof HistoriesIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/boards/$boardId': typeof BoardsBoardIdRoute
+  '/histories': typeof HistoriesIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/boards/$boardId': typeof BoardsBoardIdRoute
+  '/histories/': typeof HistoriesIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/boards/$boardId'
+  fullPaths: '/' | '/boards/$boardId' | '/histories'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/boards/$boardId'
-  id: '__root__' | '/' | '/boards/$boardId'
+  to: '/' | '/boards/$boardId' | '/histories'
+  id: '__root__' | '/' | '/boards/$boardId' | '/histories/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BoardsBoardIdRoute: typeof BoardsBoardIdRoute
+  HistoriesIndexRoute: typeof HistoriesIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BoardsBoardIdRoute: BoardsBoardIdRoute,
+  HistoriesIndexRoute: HistoriesIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,7 +116,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/boards/$boardId"
+        "/boards/$boardId",
+        "/histories/"
       ]
     },
     "/": {
@@ -105,6 +125,9 @@ export const routeTree = rootRoute
     },
     "/boards/$boardId": {
       "filePath": "boards.$boardId.tsx"
+    },
+    "/histories/": {
+      "filePath": "histories.index.tsx"
     }
   }
 }
