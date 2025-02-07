@@ -5,6 +5,7 @@ import {
   updateLobbySchema,
   deleteLobbySchema,
 } from './schema'
+import { internalMutation, internalQuery } from './_generated/server'
 
 // Query Handlers
 
@@ -25,6 +26,14 @@ export const getLobby = query({
       .first()
     return lobby
   },
+})
+
+export const getAvailableLobby = internalQuery({
+  handler: async (ctx) => {
+    return await ctx.db.query('lobbies')
+      .filter(q => q.eq(q.field('player_count'), q.field('max_players')))
+      .first()
+  }
 })
 
 // Mutation Handlers
@@ -74,4 +83,46 @@ export const deleteLobby = mutation({
     await ctx.db.delete(existingLobby._id)
     return existingLobby._id
   },
+})
+
+export const joinLobby = internalMutation({
+  args: { lobbyId: v.id('lobbies'), playerId: v.string() },
+  handler: async (ctx, args) => {
+    const lobby = await ctx.db.get(args.lobbyId)
+    if (!lobby) throw new Error('Lobby not found')
+    
+    await ctx.db.patch(args.lobbyId, {
+      player_count: lobby.player_count + 1
+    })
+  }
+})
+
+export const handleCreationLock = internalMutation({
+  handler: async (ctx) => {
+    const lock = await ctx.db.query('creation_locks').first()
+    const now = Date.now()
+    
+    if (lock && now < lock.expiresAt) {
+      return { token: lock.token }
+    }
+    
+    const newToken = Math.floor(now / 1000)
+    await ctx.db.insert('creation_locks', {
+      token: newToken,
+      expiresAt: now + 5000 // 5 second timeout
+    })
+    
+    return { token: newToken }
+  }
+})
+
+export const validateCreationToken = internalQuery({
+  args: { token: v.number() },
+  handler: async (ctx, args) => {
+    const lock = await ctx.db.query('creation_locks')
+      .filter(q => q.eq(q.field('token'), args.token))
+      .first()
+      
+    return !!lock && Date.now() < lock.expiresAt
+  }
 }) 

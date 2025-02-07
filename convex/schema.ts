@@ -46,6 +46,11 @@ const schema = defineSchema({
     .index('id', ['id'])
     .index('column', ['columnId'])
     .index('board', ['boardId']),
+
+  creation_locks: defineTable({
+    token: v.number(),
+    expiresAt: v.number()
+  })
 })
 export default schema
 
