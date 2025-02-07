@@ -5,7 +5,6 @@ import {
   updateLobbySchema,
   deleteLobbySchema,
 } from './schema'
-import { internalMutation, internalQuery } from './_generated/server'
 
 // Query Handlers
 
@@ -28,7 +27,7 @@ export const getLobby = query({
   },
 })
 
-export const getAvailableLobby = internalQuery({
+export const getAvailableLobby = query({
   handler: async (ctx) => {
     return await ctx.db.query('lobbies')
       .filter(q => q.eq(q.field('player_count'), q.field('max_players')))
@@ -43,6 +42,7 @@ export const createLobby = mutation({
   handler: async (ctx, args) => {
     const lobbyId = await ctx.db.insert('lobbies', {
       id: args.id,
+      creator_id: args.creator_id,
       player_count: args.player_count,
       max_players: args.max_players,
     })
@@ -85,19 +85,19 @@ export const deleteLobby = mutation({
   },
 })
 
-export const joinLobby = internalMutation({
-  args: { lobbyId: v.id('lobbies'), playerId: v.string() },
+export const joinLobby = mutation({
+  args: { lobby_id: v.id('lobbies'), playerId: v.string() },
   handler: async (ctx, args) => {
-    const lobby = await ctx.db.get(args.lobbyId)
+    const lobby = await ctx.db.get(args.lobby_id)
     if (!lobby) throw new Error('Lobby not found')
     
-    await ctx.db.patch(args.lobbyId, {
+    await ctx.db.patch(args.lobby_id, {
       player_count: lobby.player_count + 1
     })
   }
 })
 
-export const handleCreationLock = internalMutation({
+export const handleCreationLock = mutation({
   handler: async (ctx) => {
     const lock = await ctx.db.query('creation_locks').first()
     const now = Date.now()
@@ -109,14 +109,14 @@ export const handleCreationLock = internalMutation({
     const newToken = Math.floor(now / 1000)
     await ctx.db.insert('creation_locks', {
       token: newToken,
-      expiresAt: now + 5000 // 5 second timeout
+      expiresAt: now + 5000
     })
     
     return { token: newToken }
   }
 })
 
-export const validateCreationToken = internalQuery({
+export const validateCreationToken = query({
   args: { token: v.number() },
   handler: async (ctx, args) => {
     const lock = await ctx.db.query('creation_locks')

@@ -5,6 +5,7 @@ import { type Infer, v } from 'convex/values'
 const schema = defineSchema({
   lobbies: defineTable({
     id: v.string(),
+    creator_id: v.string(),
     player_count: v.number(),
     max_players: v.number(),
   }).index('id', ['id']),

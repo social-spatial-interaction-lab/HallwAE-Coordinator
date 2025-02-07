@@ -7,6 +7,9 @@ export const lobbyQueries = {
   list: () => convexQuery(api.lobby.getLobbies, {}),
   // Get a specific lobby by ID
   detail: (id: string) => convexQuery(api.lobby.getLobby, { id }),
+  getAvailableLobby: () => convexQuery(api.lobby.getAvailableLobby, {}),
+  validateCreationToken: (token: number) => 
+    convexQuery(api.lobby.validateCreationToken, { token }),
 }
 
 export function useCreateLobbyMutation() {
@@ -52,5 +55,28 @@ export const historyQueries = {
 
 export function useCreateHistoryMutation() {
   const mutationFn = useConvexMutation(api.history.createHistory)
+  return useMutation({ mutationFn })
+}
+
+export function useJoinLobbyMutation() {
+  const mutationFn = useConvexMutation(
+    api.lobby.joinLobby,
+  ).withOptimisticUpdate((localStore, args) => {
+    const lobby = localStore.getQuery(api.lobby.getLobby, { id: args.lobby_id })
+    if (!lobby) return
+
+    const updatedLobby = {
+      ...lobby,
+      player_count: lobby.player_count + 1
+    }
+
+    localStore.setQuery(api.lobby.getLobby, { id: args.lobby_id }, updatedLobby)
+  })
+
+  return useMutation({ mutationFn })
+}
+
+export function useHandleCreationLockMutation() {
+  const mutationFn = useConvexMutation(api.lobby.handleCreationLock)
   return useMutation({ mutationFn })
 } 

@@ -5,9 +5,9 @@ import {
   historyQueries,
   useCreateLobbyMutation,
   useDeleteLobbyMutation,
+  useJoinLobbyMutation,
+  useHandleCreationLockMutation,
 } from '~/lobbyQueries'
-import { internal } from '../../convex/_generated/api'
-import { internalMutation, internalQuery } from '../../convex/_generated/server'
 
 export const APIRoute = createAPIFileRoute('/api/lobbies/$id')({
   GET: async ({ params }) => {
@@ -17,7 +17,6 @@ export const APIRoute = createAPIFileRoute('/api/lobbies/$id')({
   POST: async ({ params, request }) => {
     const { action } = await request.json()
 
-    // Handle different actions via POST body
     switch (action) {
       case 'quick_join':
         return handleQuickJoin(params.id, await request.json())
@@ -28,34 +27,31 @@ export const APIRoute = createAPIFileRoute('/api/lobbies/$id')({
         await deleteMutation.mutateAsync({ id: params.id })
         return json({ success: true })
       default:
-        return json({ error: 'Invalid action' }, 400)
+        return new Response("Invalid action", { status: 400 })
     }
   },
 })
 
-// Quick join handler
 async function handleQuickJoin(lobbyId: string, body: any) {
-  // Check for available lobbies
-  const availableLobby = await internalQuery(internal.lobby.getAvailableLobby)
+  const availableLobby = await lobbyQueries.getAvailableLobby()
+  const joinMutation = useJoinLobbyMutation()
+  const creationLockMutation = useHandleCreationLockMutation()
 
   if (availableLobby) {
-    // Join existing lobby
-    await internalMutation(internal.lobby.joinLobby, {
-      lobby_id: availableLobby._id,
+    await joinMutation.mutateAsync({
+      lobby_id: availableLobby.id,
       playerId: body.playerId,
     })
 
     return json({
-      lobby_id: availableLobby._id,
-      join_code: availableLobby.joinCode,
+      lobby_id: availableLobby.id,
       should_create: false,
       creation_token: 0,
     })
   }
 
-  // Handle creation lock
-  const creationLock = await internalMutation(internal.lobby.handleCreationLock)
-
+  const creationLock = await creationLockMutation.mutateAsync({})
+  
   return json({
     lobby_id: null,
     join_code: null,
@@ -64,31 +60,25 @@ async function handleQuickJoin(lobbyId: string, body: any) {
   })
 }
 
-// Lobby registration handler
 async function handleRegisterLobby(lobbyId: string, body: any) {
-  const { joinCode, maxPlayers, playerId, creationToken } = body
+  const { maxPlayers, playerId, creationToken } = body
 
-  // Validate creation token
-  const validToken = await internalQuery(internal.lobby.validateCreationToken, {
-    token: creationToken,
-  })
+  const validToken = await lobbyQueries.validateCreationToken(creationToken)
   if (!validToken) {
-    return json({ error: 'Invalid creation token' }, 400)
+    return new Response("Invalid creation token", { status: 400 })
   }
 
-  // Create new lobby
   const createMutation = useCreateLobbyMutation()
   await createMutation.mutateAsync({
     id: lobbyId,
-    joinCode,
-    maxPlayers,
-    creatorId: playerId,
+    player_count: 1,
+    max_players: maxPlayers,
+    creator_id: playerId,
   })
 
   return json({ success: true })
 }
 
-// Add this for lobby history
 export const Route = createAPIFileRoute('/api/lobbies/$id')({
   GET: async ({ params }) => {
     const history = await historyQueries.listByLobby(params.id)
