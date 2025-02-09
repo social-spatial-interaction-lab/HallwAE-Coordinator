@@ -30,7 +30,7 @@ export const getLobby = query({
 export const getAvailableLobby = query({
   handler: async (ctx) => {
     return await ctx.db.query('lobbies')
-      .filter(q => q.eq(q.field('player_count'), q.field('max_players')))
+      .filter(q => q.lt(q.field('player_count'), q.field('max_players')))
       .first()
   }
 })
