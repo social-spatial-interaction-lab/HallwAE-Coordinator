@@ -13,7 +13,7 @@ export const APIRoute = createAPIFileRoute('/api/lobbies/exit/$id')({
     })
     await client.mutation(api.history.createHistory, {
       lobby_id: id,
-      player_id: body.playerId,
+      player_id: body.player_id,
       action_type: 'leave'
     })
     return json({ success: true })

@@ -20,7 +20,7 @@ async function handleQuickJoin(body: any) {
 
     await client.mutation(api.history.createHistory, {
       lobby_id,
-      player_id: body.playerId,
+      player_id: body.player_id,
       action_type: 'join'
     })
 
