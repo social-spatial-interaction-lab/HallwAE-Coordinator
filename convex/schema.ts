@@ -11,13 +11,11 @@ const schema = defineSchema({
   }).index('id', ['id']),
 
   histories: defineTable({
-    id: v.string(),
     lobby_id: v.string(),
     player_id: v.string(),
     // 'join' or 'leave'
     action_type: v.string(),
   })
-    .index('id', ['id'])
     .index('lobby', ['lobby_id'])
     .index('player', ['player_id']),
 

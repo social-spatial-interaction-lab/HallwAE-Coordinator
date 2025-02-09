@@ -4,7 +4,7 @@ import { api } from '~/../convex/_generated/api'
 import { client } from '~/sharedConvex'
 
 export const APIRoute = createAPIFileRoute('/api/lobbies/quick_join')({
-  POST: async ({ params, request }) => {
+  POST: async ({ request }) => {
     return handleQuickJoin(await request.json())
   },
 })
@@ -13,15 +13,20 @@ async function handleQuickJoin(body: any) {
   const availableLobby = await client.query(api.lobby.getAvailableLobby)
 
   if (availableLobby) {
+    const lobby_id = availableLobby.id
     await client.mutation(api.lobby.joinLobby, {
-      lobby_id: availableLobby._id,
+      lobby_id,
       playerId: body.playerId,
     })
 
-    await client.mutation(api.lobby.)
+    await client.mutation(api.history.createHistory, {
+      lobby_id,
+      player_id: body.playerId,
+      action_type: 'join'
+    })
 
     return json({
-      lobby_id: availableLobby._id,
+      lobby_id,
       should_create: false,
       creation_token: 0,
     })

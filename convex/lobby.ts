@@ -21,8 +21,8 @@ export const getLobby = query({
   handler: async (ctx, args) => {
     const lobby = await ctx.db
       .query('lobbies')
-      .filter((q) => q.eq(q.field('id'), args.id))
-      .first()
+      .withIndex('id', (q) => q.eq('id', args.id))
+      .unique()
     return lobby
   },
 })
@@ -56,8 +56,8 @@ export const updateLobby = mutation({
     const { id, ...updateFields } = args
     const existingLobby = await ctx.db
       .query('lobbies')
-      .filter((q) => q.eq(q.field('id'), id))
-      .first()
+      .withIndex('id', (q) => q.eq('id', args.id))
+      .unique()
 
     if (!existingLobby) {
       throw new Error(`Lobby with id ${id} not found`)
@@ -73,8 +73,8 @@ export const deleteLobby = mutation({
   handler: async (ctx, args) => {
     const existingLobby = await ctx.db
       .query('lobbies')
-      .filter((q) => q.eq(q.field('id'), args.id))
-      .first()
+      .withIndex('id', (q) => q.eq('id', args.id))
+      .unique()
 
     if (!existingLobby) {
       throw new Error(`Lobby with id ${args.id} not found`)
@@ -86,13 +86,32 @@ export const deleteLobby = mutation({
 })
 
 export const joinLobby = mutation({
-  args: { lobby_id: v.id('lobbies'), playerId: v.string() },
+  args: { lobby_id: v.string(), playerId: v.string() },
   handler: async (ctx, args) => {
-    const lobby = await ctx.db.get(args.lobby_id)
+    const lobby = await ctx.db
+      .query('lobbies')
+      .withIndex("id", q => q.eq("id", args.lobby_id))
+      .unique()
     if (!lobby) throw new Error('Lobby not found')
 
-    await ctx.db.patch(args.lobby_id, {
+    await ctx.db.patch(lobby._id, {
       player_count: lobby.player_count + 1
+    })
+  }
+})
+
+export const exitLobby = mutation({
+  args: { lobby_id: v.string(), playerId: v.string() },
+  handler: async (ctx, args) => {
+    const lobby = await ctx.db
+      .query('lobbies')
+      .withIndex("id", q => q.eq("id", args.lobby_id))
+      .unique()
+
+    if (!lobby) throw new Error('Lobby not found')
+
+    await ctx.db.patch(lobby._id, {
+      player_count: lobby.player_count - 1
     })
   }
 })
@@ -127,14 +146,3 @@ export const validateCreationToken = query({
   }
 })
 
-export const exitLobby = mutation({
-  args: { lobby_id: v.id('lobbies'), playerId: v.string() },
-  handler: async (ctx, args) => {
-    const lobby = await ctx.db.get(args.lobby_id)
-    if (!lobby) throw new Error('Lobby not found')
-
-    await ctx.db.patch(args.lobby_id, {
-      player_count: lobby.player_count - 1
-    })
-  }
-})

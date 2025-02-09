@@ -40,7 +40,6 @@ export const createHistory = mutation({
   args: newHistorySchema,
   handler: async (ctx, args) => {
     const historyId = await ctx.db.insert('histories', {
-      id: args.id,
       lobby_id: args.lobby_id,
       player_id: args.player_id,
       action_type: args.action_type,
