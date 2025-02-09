@@ -90,7 +90,7 @@ export const joinLobby = mutation({
   handler: async (ctx, args) => {
     const lobby = await ctx.db.get(args.lobby_id)
     if (!lobby) throw new Error('Lobby not found')
-    
+
     await ctx.db.patch(args.lobby_id, {
       player_count: lobby.player_count + 1
     })
@@ -101,17 +101,17 @@ export const handleCreationLock = mutation({
   handler: async (ctx) => {
     const lock = await ctx.db.query('creation_locks').first()
     const now = Date.now()
-    
+
     if (lock && now < lock.expiresAt) {
       return { token: lock.token }
     }
-    
+
     const newToken = Math.floor(now / 1000)
     await ctx.db.insert('creation_locks', {
       token: newToken,
       expiresAt: now + 5000
     })
-    
+
     return { token: newToken }
   }
 })
@@ -122,7 +122,19 @@ export const validateCreationToken = query({
     const lock = await ctx.db.query('creation_locks')
       .filter(q => q.eq(q.field('token'), args.token))
       .first()
-      
+
     return !!lock && Date.now() < lock.expiresAt
   }
-}) 
+})
+
+export const exitLobby = mutation({
+  args: { lobby_id: v.id('lobbies'), playerId: v.string() },
+  handler: async (ctx, args) => {
+    const lobby = await ctx.db.get(args.lobby_id)
+    if (!lobby) throw new Error('Lobby not found')
+
+    await ctx.db.patch(args.lobby_id, {
+      player_count: lobby.player_count - 1
+    })
+  }
+})
