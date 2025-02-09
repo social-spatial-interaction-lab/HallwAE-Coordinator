@@ -86,7 +86,7 @@ export const deleteLobby = mutation({
 })
 
 export const joinLobby = mutation({
-  args: { lobby_id: v.string(), playerId: v.string() },
+  args: { lobby_id: v.string() },
   handler: async (ctx, args) => {
     const lobby = await ctx.db
       .query('lobbies')
@@ -101,7 +101,7 @@ export const joinLobby = mutation({
 })
 
 export const exitLobby = mutation({
-  args: { lobby_id: v.string(), playerId: v.string() },
+  args: { lobby_id: v.string() },
   handler: async (ctx, args) => {
     const lobby = await ctx.db
       .query('lobbies')

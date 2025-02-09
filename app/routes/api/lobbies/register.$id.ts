@@ -10,7 +10,7 @@ export const APIRoute = createAPIFileRoute('/api/lobbies/register/$id')({
   },
 })
 
-async function handleRegisterLobby(lobbyId: string, body: any) {
+async function handleRegisterLobby(lobby_id: string, body: any) {
   const { maxPlayers, playerId, creationToken } = body
 
   const validToken = await client.query(api.lobby.validateCreationToken, {
@@ -21,11 +21,18 @@ async function handleRegisterLobby(lobbyId: string, body: any) {
   }
 
   await client.mutation(api.lobby.createLobby, {
-    id: lobbyId,
+    id: lobby_id,
     player_count: 1,
     max_players: maxPlayers,
     creator_id: playerId,
   })
+
+  await client.mutation(api.history.createHistory, {
+    lobby_id,
+    player_id: body.playerId,
+    action_type: 'join'
+  })
+
 
   return json({ success: true })
 }
