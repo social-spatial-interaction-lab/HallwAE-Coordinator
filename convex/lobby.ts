@@ -108,7 +108,8 @@ export const exitLobby = mutation({
       .withIndex("id", q => q.eq("id", args.lobby_id))
       .unique()
 
-    if (!lobby) throw new Error('Lobby not found')
+    // if host exist first, there will be no lobby in the database
+    if (!lobby) { return }
 
     await ctx.db.patch(lobby._id, {
       player_count: lobby.player_count - 1
