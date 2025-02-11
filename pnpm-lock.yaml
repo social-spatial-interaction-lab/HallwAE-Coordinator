@@ -11,6 +11,9 @@ importers:
       '@convex-dev/react-query':
         specifier: 0.0.0-alpha.8
         version: 0.0.0-alpha.8(@tanstack/react-query@5.66.0(react@19.0.0))(convex@1.19.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
+      '@faker-js/faker':
+        specifier: ^9.4.0
+        version: 9.4.0
       '@tanstack/react-query':
         specifier: ^5.66.0
         version: 5.66.0(react@19.0.0)
@@ -797,6 +800,10 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@faker-js/faker@9.4.0':
+    resolution: {integrity: sha512-85+k0AxaZSTowL0gXp8zYWDIrWclTbRPg/pm/V0dSFZ6W6D4lhcG3uuZl4zLsEKfEvs69xDbLN2cHQudwp95JA==}
+    engines: {node: '>=18.0.0', npm: '>=9.0.0'}
 
   '@inquirer/confirm@5.1.5':
     resolution: {integrity: sha512-ZB2Cz8KeMINUvoeDi7IrvghaVkYT2RB0Zb31EaLWOE87u276w4wnApv0SH2qWaJ3r0VSUa3BIuz7qAV2ZvsZlg==}
@@ -3754,6 +3761,8 @@ snapshots:
 
   '@esbuild/win32-x64@0.24.2':
     optional: true
+
+  '@faker-js/faker@9.4.0': {}
 
   '@inquirer/confirm@5.1.5(@types/node@22.13.1)':
     dependencies:

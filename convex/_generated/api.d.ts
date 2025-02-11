@@ -17,6 +17,7 @@ import type * as board from "../board.js";
 import type * as crons from "../crons.js";
 import type * as history from "../history.js";
 import type * as lobby from "../lobby.js";
+import type * as players from "../players.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -31,6 +32,7 @@ declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   history: typeof history;
   lobby: typeof lobby;
+  players: typeof players;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

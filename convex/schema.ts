@@ -3,6 +3,11 @@ import { type Infer, v } from 'convex/values'
 
 // TODO: will player_id be static for each devices? we can manually set username in the database.
 const schema = defineSchema({
+  players: defineTable({
+    player_id: v.string(),
+    player_name: v.string(),
+  }).index('player_id', ['player_id']),
+
   lobbies: defineTable({
     id: v.string(),
     creator_id: v.string(),
@@ -100,4 +105,5 @@ export type Board = Infer<typeof board>
 export type Column = Infer<typeof column>
 export type Item = Infer<typeof item>
 export type Lobby = Infer<typeof lobby>
+export type Player = Infer<typeof schema.tables.players.validator>
 
