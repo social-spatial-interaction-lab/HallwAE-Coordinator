@@ -13,8 +13,6 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
-import type * as board from "../board.js";
-import type * as crons from "../crons.js";
 import type * as history from "../history.js";
 import type * as lobby from "../lobby.js";
 import type * as players from "../players.js";
@@ -28,8 +26,6 @@ import type * as players from "../players.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  board: typeof board;
-  crons: typeof crons;
   history: typeof history;
   lobby: typeof lobby;
   players: typeof players;
