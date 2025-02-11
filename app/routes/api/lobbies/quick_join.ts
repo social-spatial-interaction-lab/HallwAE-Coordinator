@@ -10,6 +10,7 @@ export const APIRoute = createAPIFileRoute('/api/lobbies/quick_join')({
 })
 
 async function handleQuickJoin(body: any) {
+  const { player_id, player_name } = body
   const availableLobby = await client.query(api.lobby.getAvailableLobby)
 
   if (availableLobby) {
@@ -20,7 +21,8 @@ async function handleQuickJoin(body: any) {
 
     await client.mutation(api.history.createHistory, {
       lobby_id,
-      player_id: body.player_id,
+      player_id,
+      player_name,
       action_type: 'join'
     })
 

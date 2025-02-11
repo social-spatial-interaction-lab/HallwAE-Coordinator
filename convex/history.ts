@@ -34,14 +34,13 @@ export const getHistoriesByPlayer = query({
   },
 })
 
-// Mutation Handlers
-
 export const createHistory = mutation({
   args: newHistorySchema,
   handler: async (ctx, args) => {
     const historyId = await ctx.db.insert('histories', {
       lobby_id: args.lobby_id,
       player_id: args.player_id,
+      player_name: args.player_name,
       action_type: args.action_type,
     })
     return historyId

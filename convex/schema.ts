@@ -15,6 +15,7 @@ const schema = defineSchema({
     player_id: v.string(),
     // 'join' or 'leave'
     action_type: v.string(),
+    player_name: v.string(),
   })
     .index('lobby', ['lobby_id'])
     .index('player', ['player_id']),
