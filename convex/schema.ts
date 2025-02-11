@@ -64,7 +64,7 @@ const column = schema.tables.columns.validator
 const item = schema.tables.items.validator
 const lobby = schema.tables.lobbies.validator
 const history = schema.tables.histories.validator
-
+const player = schema.tables.players.validator
 export const updateBoardSchema = v.object({
   id: board.fields.id,
   name: v.optional(board.fields.name),
@@ -106,5 +106,5 @@ export type Board = Infer<typeof board>
 export type Column = Infer<typeof column>
 export type Item = Infer<typeof item>
 export type Lobby = Infer<typeof lobby>
-export type Player = Infer<typeof schema.tables.players.validator>
-
+export type History = Infer<typeof history>
+export type Player = Infer<typeof player>
