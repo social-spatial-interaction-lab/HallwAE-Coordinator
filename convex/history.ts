@@ -37,10 +37,18 @@ export const getHistoriesByPlayer = query({
 export const createHistory = mutation({
   args: newHistorySchema,
   handler: async (ctx, args) => {
+    const player = await ctx.db
+      .query('players')
+      .withIndex('player_id', (q) => q.eq('player_id', args.player_id))
+      .unique()
+    if (!player) {
+      throw new Error('Player not found')
+    }
+
     const historyId = await ctx.db.insert('histories', {
       lobby_id: args.lobby_id,
       player_id: args.player_id,
-      player_name: args.player_name,
+      player_name: player.player_name,
       action_type: args.action_type,
     })
     return historyId

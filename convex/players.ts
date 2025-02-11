@@ -18,7 +18,7 @@ export const createPlayer = mutation({
     }
 
     // Generate a random player name using Faker
-    const player_name = faker.internet.userName()
+    const player_name = faker.person.firstName()
 
     // Create new player
     const player = await ctx.db.insert('players', {

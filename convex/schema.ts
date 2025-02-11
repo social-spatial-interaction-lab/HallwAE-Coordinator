@@ -99,7 +99,8 @@ export const deleteLobbySchema = v.object({
   id: column.fields.id,
 })
 
-export const newHistorySchema = v.object(history.fields)
+const { player_name, ...player_rest } = history.fields
+export const newHistorySchema = v.object(player_rest)
 
 export type Board = Infer<typeof board>
 export type Column = Infer<typeof column>
