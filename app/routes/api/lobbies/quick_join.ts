@@ -16,18 +16,9 @@ async function handleQuickJoin(body: any) {
   })
 
   const availableLobby = await client.query(api.lobby.getAvailableLobby)
-
+  // either join or create a new lobby
   if (availableLobby) {
     const lobby_id = availableLobby.id
-    await client.mutation(api.lobby.joinLobby, {
-      lobby_id,
-    })
-
-    await client.mutation(api.history.createHistory, {
-      lobby_id,
-      player_id,
-      action_type: 'join'
-    })
 
     return json({
       lobby_id,
@@ -40,7 +31,6 @@ async function handleQuickJoin(body: any) {
 
   return json({
     lobby_id: null,
-    join_code: null,
     should_create: true,
     creation_token: creationLock.token,
   })
