@@ -11,8 +11,8 @@ export const APIRoute = createAPIFileRoute(
     // quit should be seperated with lobby unregister
     // check whether the user is the creator of the lobby
     const lobby = await client.query(api.lobby.getLobby, { id })
-    if (lobby && lobby.creator_id !== player_id) {
-      return new Response("Not lobby's creator, cannot delete", { status: 400 })
+    if (!lobby) {
+      return new Response("Lobby not found", { status: 404 })
     }
     await client.mutation(api.lobby.deleteLobby, { id })
     return json({ success: true })
