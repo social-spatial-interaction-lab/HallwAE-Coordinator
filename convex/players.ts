@@ -17,7 +17,10 @@ export const createPlayer = mutation({
       await ctx.db.patch(existingPlayer._id, {
         player_name: args.player_name,
       })
-      return existingPlayer
+
+      // Get the updated player data after the patch
+      const updatedPlayer = await ctx.db.get(existingPlayer._id)
+      return updatedPlayer
     }
 
     // Create new player
