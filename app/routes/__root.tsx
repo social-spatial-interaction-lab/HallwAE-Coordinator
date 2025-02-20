@@ -89,8 +89,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-4">
               <div>
                 <Link to="/" className="block leading-tight">
-                  <div className="font-black text-2xl text-white">Trellaux</div>
-                  <div className="text-slate-500">a TanStack Demo</div>
+                  <div className="font-black text-2xl text-white">HallwAE</div>
+                  <div className="text-slate-500">a AR Interaction Demo</div>
                 </Link>
               </div>
               <LoadingIndicator />
@@ -144,9 +144,8 @@ function LoadingIndicator() {
   const isLoading = useRouterState({ select: (s) => s.isLoading })
   return (
     <div
-      className={`h-12 transition-all duration-300 ${
-        isLoading ? `opacity-100 delay-300` : `opacity-0 delay-0`
-      }`}
+      className={`h-12 transition-all duration-300 ${isLoading ? `opacity-100 delay-300` : `opacity-0 delay-0`
+        }`}
     >
       <Loader />
     </div>
