@@ -34,6 +34,34 @@ export const getHistoriesByPlayer = query({
   },
 })
 
+export const updateTodayHistoriesPlayerName = mutation({
+  args: {
+    player_id: v.string(),
+    new_player_name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Get today's start timestamp (midnight)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    // Find all histories for this player from today
+    const todayHistories = await ctx.db
+      .query('histories')
+      .withIndex('player', (q) => q.eq('player_id', args.player_id))
+      .filter((q) => q.gte(q.field('_creationTime'), today.getTime()))
+      .collect()
+
+    // Update each history's player_name
+    for (const history of todayHistories) {
+      await ctx.db.patch(history._id, {
+        player_name: args.new_player_name,
+      })
+    }
+
+    return todayHistories.length // Return number of updated records
+  },
+})
+
 export const createHistory = mutation({
   args: newHistorySchema,
   handler: async (ctx, args) => {
@@ -53,4 +81,6 @@ export const createHistory = mutation({
     })
     return historyId
   },
-}) 
+})
+
+

@@ -17,7 +17,7 @@ export const getPlayer = query({
 export const updatePlayer = mutation({
   args: {
     player_id: v.string(),
-    player_name: v.string()
+    new_player_name: v.string()
   },
   async handler(ctx, args) {
     const existingPlayer = await ctx.db
@@ -29,12 +29,12 @@ export const updatePlayer = mutation({
       throw new Error(`Player with id ${args.player_id} not found`)
     }
 
-    if (existingPlayer.player_name === args.player_name) {
+    if (existingPlayer.player_name === args.new_player_name) {
       return existingPlayer
     }
 
     await ctx.db.patch(existingPlayer._id, {
-      player_name: args.player_name,
+      player_name: args.new_player_name,
     })
 
     return await ctx.db.get(existingPlayer._id)

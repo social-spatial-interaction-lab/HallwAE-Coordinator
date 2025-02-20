@@ -32,15 +32,22 @@ export const APIRoute = createAPIFileRoute('/api/players/register/$player_id')({
       })
 
       // Use appropriate mutation based on whether player exists
-      const player = existingPlayer
-        ? await client.mutation(api.players.updatePlayer, {
+      let player
+      if (existingPlayer) {
+        player = await client.mutation(api.players.updatePlayer, {
+          player_id,
+          new_player_name: body.player_name
+        })
+        await client.mutation(api.history.updateTodayHistoriesPlayerName, {
+          player_id,
+          new_player_name: body.player_name
+        })
+      } else {
+        player = await client.mutation(api.players.createPlayer, {
           player_id,
           player_name: body.player_name
         })
-        : await client.mutation(api.players.createPlayer, {
-          player_id,
-          player_name: body.player_name
-        })
+      }
 
       return json(player)
     } catch (error) {
