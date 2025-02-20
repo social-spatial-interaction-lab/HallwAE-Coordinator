@@ -31,8 +31,8 @@ export const Route = createRootRouteWithContext<{
       },
       ...seo({
         title:
-          'TanStack Start | Type-Safe, Client-First, Full-Stack React Framework',
-        description: `TanStack Start is a type-safe, client-first, full-stack React framework. `,
+          'HallwAE | An AR Interaction Demo',
+        description: `HallwAE is an AR chat demo for spontaneous interaction`,
       }),
     ],
     links: [
@@ -90,7 +90,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               <div>
                 <Link to="/" className="block leading-tight">
                   <div className="font-black text-2xl text-white">HallwAE</div>
-                  <div className="text-slate-500">a AR Interaction Demo</div>
+                  <div className="text-slate-500">An AR Interaction Demo</div>
                 </Link>
               </div>
               <LoadingIndicator />
