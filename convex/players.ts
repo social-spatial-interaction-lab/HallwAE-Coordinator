@@ -56,9 +56,11 @@ export const createPlayer = mutation({
       throw new Error(`Player with id ${args.player_id} already exists`)
     }
 
-    return await ctx.db.insert('players', {
+    const id = await ctx.db.insert('players', {
       player_id: args.player_id,
       player_name: args.player_name,
     })
+
+    return await ctx.db.get(id)
   },
 })
