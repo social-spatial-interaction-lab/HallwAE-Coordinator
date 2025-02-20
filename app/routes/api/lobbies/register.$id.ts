@@ -2,6 +2,8 @@ import { json } from '@tanstack/start'
 import { createAPIFileRoute } from '@tanstack/start/api'
 import { api } from '~/../convex/_generated/api'
 import { client } from '~/sharedConvex'
+import { createOrUpdatePlayer } from '~/player'
+
 
 export const APIRoute = createAPIFileRoute('/api/lobbies/register/$id')({
   POST: async ({ params, request }) => {
@@ -12,10 +14,7 @@ export const APIRoute = createAPIFileRoute('/api/lobbies/register/$id')({
 
 async function handleRegisterLobby(lobby_id: string, body: any) {
   const { max_players, player_id, player_name, creation_token } = body
-  await client.mutation(api.players.createPlayer, {
-    player_id,
-    player_name
-  })
+  await createOrUpdatePlayer(player_id, player_name)
 
   const validToken = await client.query(api.lobby.validateCreationToken, {
     token: creation_token,

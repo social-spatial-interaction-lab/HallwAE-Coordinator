@@ -1,7 +1,6 @@
 import { json } from '@tanstack/start'
 import { createAPIFileRoute } from '@tanstack/start/api'
-import { api } from '~/../convex/_generated/api'
-import { client } from '~/sharedConvex'
+import { createOrUpdatePlayer } from '~/player'
 
 export const APIRoute = createAPIFileRoute('/api/players/register/$player_id')({
   POST: async ({ params, request }) => {
@@ -26,28 +25,7 @@ export const APIRoute = createAPIFileRoute('/api/players/register/$player_id')({
         return json({ error: 'player_name is required and must be a string' }, { status: 400 })
       }
 
-      // Check if player exists
-      const existingPlayer = await client.query(api.players.getPlayer, {
-        id: player_id
-      })
-
-      // Use appropriate mutation based on whether player exists
-      let player
-      if (existingPlayer) {
-        player = await client.mutation(api.players.updatePlayer, {
-          player_id,
-          new_player_name: body.player_name
-        })
-        await client.mutation(api.history.updateTodayHistoriesPlayerName, {
-          player_id,
-          new_player_name: body.player_name
-        })
-      } else {
-        player = await client.mutation(api.players.createPlayer, {
-          player_id,
-          player_name: body.player_name
-        })
-      }
+      const player = createOrUpdatePlayer(player_id, body.player_name)
 
       return json(player)
     } catch (error) {

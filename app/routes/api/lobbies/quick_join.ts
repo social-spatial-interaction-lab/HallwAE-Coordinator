@@ -2,6 +2,8 @@ import { json } from '@tanstack/start'
 import { createAPIFileRoute } from '@tanstack/start/api'
 import { api } from '~/../convex/_generated/api'
 import { client } from '~/sharedConvex'
+import { createOrUpdatePlayer } from '~/player'
+
 
 export const APIRoute = createAPIFileRoute('/api/lobbies/quick_join')({
   POST: async ({ request }) => {
@@ -11,10 +13,7 @@ export const APIRoute = createAPIFileRoute('/api/lobbies/quick_join')({
 
 async function handleQuickJoin(body: any) {
   const { player_id, player_name } = body
-  await client.mutation(api.players.createPlayer, {
-    player_id,
-    player_name
-  })
+  await createOrUpdatePlayer(player_id, player_name)
 
   const availableLobby = await client.query(api.lobby.getAvailableLobby)
   // either join or create a new lobby
